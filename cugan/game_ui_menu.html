@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cica menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ui-width: 280px;
+    --menu-radius: 4px;
+    --item-height: 40px;
+    --transition-speed: 0.3s;
+  }
+
+  body {
+    background: transparent;
+    font-family: 'Montserrat', Arial, sans-serif;
+    color: white;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  .ui {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--ui-width);   
+  }
+
+  .header-box {
+    background: rgba(0,0,0,0.95);
+    border-radius: var(--menu-radius);
+    padding: 0;                 
+    border: 1px solid #222;
+    box-shadow: 0 0 30px rgba(50,50,50,0.5), 0 0 60px rgba(80,80,80,0.3);
+    text-align: center;
+    margin-bottom: 10px;
+    height: 120px;          
+    overflow: hidden;         
+  }
+
+  .header-banner { width: 100%; height: 100%; }
+  .header-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;        
+    display: block;
+  }
+
+  .nav-box {
+    background: rgba(0,0,0,0.95);
+    border-radius: var(--menu-radius);
+    padding: 10px 16px;
+    border: 1px solid #222;
+    box-shadow: 0 0 15px rgba(50,50,50,0.4);
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .nav-path {
+    color: #ccc;
+  }
+
+  .nav-current {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .content-row {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .menu {
+    background: rgba(0,0,0,0.95);
+    border-radius: var(--menu-radius);
+    box-shadow: 0 0 30px rgba(50,50,50,0.8), 0 0 60px rgba(80,80,80,0.6);
+    padding: 0;              
+    position: relative;
+    width: 100%;                
+    min-width: 0;               
+    overflow: hidden;
+  }
+
+  .menu-content { 
+    display: block; 
+    width: 100%;
+    transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+  }
+
+  .menu-content.slide-in-right {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  .menu-content.slide-in-left {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  .menu-content.slide-out-right {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  .menu-content.slide-out-left {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  .menu-content.active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .menu-list li {
+    background: #0d0d0d;
+    padding: 0 16px;
+    height: var(--item-height);
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+  }
+  .menu-list li:last-child { border-bottom: none; }
+
+  .menu-list li.selected {
+    background: #222;
+    box-shadow: inset 0 0 10px #333;
+    border-bottom-color: transparent;  
+  }
+
+  .menu-list li:hover {
+    background: #1a1a1a;
+  }
+
+  .menu-list li > span:last-child {
+    margin-left: auto;
+    padding-right: 4px; 
+    opacity: 0.9;
+    font-weight: 600;
+  }
+
+  .menu-list li .left {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .menu-list li span {
+    font-weight: 500;
+    color: #ffffff;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+  }
+
+  .footer-box {
+    background: rgba(0,0,0,0.95);
+    border-radius: var(--menu-radius);
+    padding: 12px 16px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #222;
+    text-shadow: 0 0 6px #555;
+    margin-top: 10px;
+    box-shadow: 0 0 30px rgba(50,50,50,0.5), 0 0 60px rgba(80,80,80,0.3);
+    width: 100%;                 
+    box-sizing: border-box;
+    font-weight: 500;
+  }
+
+  .hidden { 
+    display: none; 
+  }
+
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #333;
+    transition: .4s;
+    border-radius: 34px;
+    border: 1px solid #555;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 2px;
+    background-color: #999;
+    transition: .4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: #ffffff;
+    border-color: #ffffff;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(18px);
+    background-color: #333;
+  }
+</style>
+</head>
+<body>
+
+<div class="ui">
+  <div class="header-box">
+    <div id="headerBanner" class="header-banner">
+      <img id="headerBannerImg" alt="banner">
+    </div>
+  </div>
+
+  <div class="nav-box">
+    <span id="navPath" class="nav-path">Main</span>
+    <span class="nav-current" id="navCurrent"> › Main</span>
+  </div>
+
+  <div class="content-row">
+    <div class="menu" id="menuBox">
+      <div id="mainMenu" class="menu-content active">
+        <ul class="menu-list">
+          <li data-action="show-player"><span class="left"><span>Player</span></span><span>›</span></li>
+          <li data-action="show-server"><span class="left"><span>Server</span></span><span>›</span></li>
+          <li data-action="show-weapon"><span class="left"><span>Weapon</span></span><span>›</span></li>
+          <li data-action="show-vehicle"><span class="left"><span>Vehicle</span></span><span>›</span></li>
+          <li data-action="show-teleport"><span class="left"><span>Teleport</span></span><span>›</span></li>
+          <li data-action="show-misc"><span class="left"><span>Miscellaneous</span></span><span>›</span></li>
+          <li data-action="show-settings"><span class="left"><span>Settings</span></span><span>›</span></li>
+        </ul>
+      </div>
+
+      <div id="playerMenu" class="menu-content hidden">
+        <ul class="menu-list">
+          <li data-action="toggle-godmode"><span class="left"><span>Godmode</span></span><label class="toggle-switch"><input type="checkbox" id="godmodeToggle"><span class="slider"></span></label></li>
+          <li data-action="toggle-invincible"><span class="left"><span>Invincible</span></span><label class="toggle-switch"><input type="checkbox" id="invincibleToggle"><span class="slider"></span></label></li>
+          <li data-action="toggle-noclip"><span class="left"><span>Noclip</span></span><label class="toggle-switch"><input type="checkbox" id="noclipToggle"><span class="slider"></span></label></li>
+          <li data-action="heal"><span class="left"><span>Heal Player</span></span></li>
+        </ul>
+      </div>
+
+      <div id="serverMenu" class="menu-content hidden">
+        <ul class="menu-list">
+          <li data-action="toggle-infinite-ammo"><span class="left"><span>Infinite Ammo</span></span><label class="toggle-switch"><input type="checkbox" id="ammoToggle"><span class="slider"></span></label></li>
+          <li data-action="toggle-no-ragdoll"><span class="left"><span>No Ragdoll</span></span><label class="toggle-switch"><input type="checkbox" id="ragdollToggle"><span class="slider"></span></label></li>
+          <li data-action="kick-all"><span class="left"><span>Kick All Players</span></span></li>
+        </ul>
+      </div>
+
+      <div id="weaponMenu" class="menu-content hidden">
+        <ul class="menu-list">
+          <li data-action="toggle-unlimited-clip"><span class="left"><span>Unlimited Clip</span></span><label class="toggle-switch"><input type="checkbox" id="clipToggle"><span class="slider"></span></label></li>
+          <li data-action="give-all-weapons"><span class="left"><span>Give All Weapons</span></span></li>
+        </ul>
+      </div>
+
+      <div id="vehicleMenu" class="menu-content hidden">
+        <ul class="menu-list">
+          <li data-action="toggle-godmode-vehicle"><span class="left"><span>Vehicle Godmode</span></span><label class="toggle-switch"><input type="checkbox" id="vehicleGodmodeToggle"><span class="slider"></span></label></li>
+          <li data-action="repair-vehicle"><span class="left"><span>Repair Vehicle</span></span></li>
+          <li data-action="spawn-vehicle"><span class="left"><span>Spawn Vehicle</span></span></li>
+        </ul>
+      </div>
+
+      <div id="teleportMenu" class="menu-content hidden">
+        <ul class="menu-list">
+          <li data-action="teleport-home"><span class="left"><span>Teleport Home</span></span></li>
+          <li data-action="teleport-job"><span class="left"><span>Teleport to Job</span></span></li>
+        </ul>
+      </div>
+
+      <div id="miscMenu" class="menu-content hidden">
+        <ul class="menu-list">
+          <li data-action="toggle-nightvision"><span class="left"><span>Nightvision</span></span><label class="toggle-switch"><input type="checkbox" id="nightvisionToggle"><span class="slider"></span></label></li>
+          <li data-action="toggle-thermalvision"><span class="left"><span>Thermal Vision</span></span><label class="toggle-switch"><input type="checkbox" id="thermalvisionToggle"><span class="slider"></span></label></li>
+        </ul>
+      </div>
+
+      <div id="settingsMenu" class="menu-content hidden">
+        <ul class="menu-list">
+          <li data-action="toggle-crosshair"><span class="left"><span>Crosshair</span></span><label class="toggle-switch"><input type="checkbox" id="crosshairToggle"><span class="slider"></span></label></li>
+          <li data-action="toggle-hud"><span class="left"><span>HUD</span></span><label class="toggle-switch"><input type="checkbox" id="hudToggle"><span class="slider"></span></label></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-box">
+    <span>FXSE - release</span>
+    <span id="globalFooterCount">1/7</span>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const DEFAULT_BANNER_URL = 'https://cdn.discordapp.com/attachments/1289592353593491511/1410701342791569488/Snimka_obrazovky_2025-07-16_175136.png?ex=68b1f981&is=68b0a801&hm=5f61a7a0728faca70d1f0ef5fb1702cbf1737da9f56f1582159cd8d809e41009&';
+
+  const menus = {
+    mainMenu: document.getElementById("mainMenu"),
+    player: document.getElementById("playerMenu"),
+    server: document.getElementById("serverMenu"),
+    weapon: document.getElementById("weaponMenu"),
+    vehicle: document.getElementById("vehicleMenu"),
+    teleport: document.getElementById("teleportMenu"),
+    misc: document.getElementById("miscMenu"),
+    settings: document.getElementById("settingsMenu")
+  };
+
+  const menuNames = {
+    mainMenu: "Main",
+    player: "Player",
+    server: "Server",
+    weapon: "Weapon",
+    vehicle: "Vehicle",
+    teleport: "Teleport",
+    misc: "Miscellaneous",
+    settings: "Settings"
+  };
+
+  let currentMenu = menus.mainMenu;
+  let selectedIndex = 0;
+  let history = [];
+  let isAnimating = false;
+
+  const globalFooterCount = document.getElementById("globalFooterCount");
+  const headerBannerImg = document.getElementById('headerBannerImg');
+  const menuBox = document.getElementById('menuBox');
+  const navPath = document.getElementById('navPath');
+  const navCurrent = document.getElementById('navCurrent');
+
+  function getCurrentList() {
+    return currentMenu.querySelector('.menu-list');
+  }
+
+  function setHeaderBanner(url) {
+    headerBannerImg.src = url || DEFAULT_BANNER_URL;
+  }
+
+  function updateNavigation() {
+    if (history.length === 0) {
+      navPath.textContent = "Main";
+      navCurrent.textContent = " › Main";
+      return;
+    }
+    
+    let path = "Main";
+    let currentName = "";
+    
+    // Get current menu name
+    for (const [key, value] of Object.entries(menus)) {
+      if (value === currentMenu) {
+        currentName = menuNames[key];
+        break;
+      }
+    }
+    
+    // Build path from history
+    if (history.length > 0) {
+      const lastMenu = history[history.length - 1];
+      for (const [key, value] of Object.entries(menus)) {
+        if (value === lastMenu) {
+          path = menuNames[key];
+          break;
+        }
+      }
+    }
+    
+    navPath.textContent = path;
+    navCurrent.textContent = ` › ${currentName}`;
+  }
+
+  function updateFooterCount(menuItems) {
+    if (globalFooterCount) {
+      if (!menuItems || menuItems.length === 0) globalFooterCount.textContent = '0/0';
+      else globalFooterCount.textContent = `${selectedIndex + 1}/${menuItems.length}`;
+    }
+  }
+
+  function updateSelection() {
+    const menuItems = currentMenu.querySelectorAll('.menu-list li');
+    document.querySelectorAll('.menu-list li.selected').forEach(el => el.classList.remove('selected'));
+    if (menuItems.length > 0) {
+      menuItems[selectedIndex].classList.add('selected');
+      menuItems[selectedIndex].scrollIntoView({ block: 'nearest' });
+    }
+    updateFooterCount(menuItems);
+  }
+
+  function resizeMenu() {
+    const list = currentMenu.querySelector('.menu-list');
+    if (!list) return;
+    const items = list.querySelectorAll('li');
+    if (items.length === 0) return;
+
+    const itemHeight = items[0].getBoundingClientRect().height;
+    const cs = window.getComputedStyle(menuBox);
+    const pt = parseFloat(cs.paddingTop) || 0;
+    const pb = parseFloat(cs.paddingBottom) || 0;
+
+    const targetH = Math.round(itemHeight * items.length + pt + pb);
+    menuBox.style.height = targetH + 'px';
+  }
+
+  function animateMenu(menuElement, direction) {
+    return new Promise((resolve) => {
+      if (!menuElement) {
+        resolve();
+        return;
+      }
+      
+      menuElement.classList.remove('hidden');
+      menuElement.classList.remove('active');
+      menuElement.classList.remove('slide-in-right');
+      menuElement.classList.remove('slide-in-left');
+      menuElement.classList.remove('slide-out-right');
+      menuElement.classList.remove('slide-out-left');
+      
+      // Force reflow
+      void menuElement.offsetWidth;
+      
+      if (direction === 'forward') {
+        menuElement.classList.add('slide-in-right');
+      } else {
+        menuElement.classList.add('slide-in-left');
+      }
+      
+      setTimeout(() => {
+        menuElement.classList.add('active');
+        setTimeout(resolve, 300);
+      }, 10);
+    });
+  }
+
+  function animateMenuOut(menuElement, direction) {
+    return new Promise((resolve) => {
+      if (!menuElement) {
+        resolve();
+        return;
+      }
+      
+      menuElement.classList.remove('active');
+      
+      if (direction === 'forward') {
+        menuElement.classList.add('slide-out-left');
+      } else {
+        menuElement.classList.add('slide-out-right');
+      }
+      
+      setTimeout(() => {
+        menuElement.classList.add('hidden');
+        menuElement.classList.remove('slide-out-left');
+        menuElement.classList.remove('slide-out-right');
+        resolve();
+      }, 300);
+    });
+  }
+
+  async function showMenu(menuId) {
+    if (isAnimating) return;
+    isAnimating = true;
+    
+    const oldMenu = currentMenu;
+    history.push(oldMenu);
+    
+    await animateMenuOut(oldMenu, 'forward');
+    
+    currentMenu = menus[menuId];
+    await animateMenu(currentMenu, 'forward');
+    
+    selectedIndex = 0;
+    updateSelection();
+    resizeMenu();
+    updateNavigation();
+
+    const newList = getCurrentList();
+    if (newList) newList.scrollTop = 0;
+    
+    isAnimating = false;
+  }
+
+  async function handleBack() {
+    if (isAnimating || history.length === 0) return;
+    isAnimating = true;
+    
+    const oldMenu = currentMenu;
+    await animateMenuOut(oldMenu, 'backward');
+    
+    currentMenu = history.pop();
+    await animateMenu(currentMenu, 'backward');
+    
+    selectedIndex = 0;
+    updateSelection();
+    resizeMenu();
+    updateNavigation();
+
+    const newList = getCurrentList();
+    if (newList) newList.scrollTop = 0;
+    
+    isAnimating = false;
+  }
+
+  window.addEventListener('message', function(event) {
+    const data = event.data || {};
+    const menuItems = currentMenu.querySelectorAll('.menu-list li');
+
+    if (data.action === 'navigate') {
+      if (menuItems.length === 0) return;
+      selectedIndex = data.direction === 'up'
+        ? (selectedIndex - 1 + menuItems.length) % menuItems.length
+        : (selectedIndex + 1) % menuItems.length;
+      updateSelection();
+    } else if (data.action === 'select') {
+      if (menuItems.length === 0) return;
+      const selectedItem = menuItems[selectedIndex];
+      const action = selectedItem.getAttribute('data-action');
+
+      if (action.startsWith('show-')) {
+        showMenu(action.replace('show-', ''));
+      } else if (action.startsWith('toggle-')) {
+        const checkbox = selectedItem.querySelector("input[type='checkbox']");
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          window.MachoSendLuaMessage(JSON.stringify({ event: 'toggle', action: action.replace('toggle-', ''), state: checkbox.checked }));
+        }
+      } else {
+        window.MachoSendLuaMessage(JSON.stringify({ event: 'menuAction', action: action }));
+      }
+    } else if (data.action === 'back') {
+      handleBack();
+    } else if (data.action === 'setHeaderBanner') {
+      setHeaderBanner(data.url);
+    }
+  });
+
+  // Inicializácia
+  updateSelection();
+  updateNavigation();
+  setHeaderBanner(DEFAULT_BANNER_URL);
+  resizeMenu();
+  window.addEventListener('resize', resizeMenu);
+});
+</script>
+
+</body>
+</html>
